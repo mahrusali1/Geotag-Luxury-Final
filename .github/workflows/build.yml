@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0
 
       - name: Set up JDK 8
         uses: actions/setup-java@v4
@@ -22,6 +23,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          git config --global user.email "mahrusali@example.com"
+          git config --global user.name "Mahrus Ali"
           chmod +x update-deps.sh
           ./update-deps.sh
 
