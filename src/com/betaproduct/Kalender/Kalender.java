@@ -1,4 +1,4 @@
-package com.betaproduct.BaruLagi;
+package com.betaproduct.Kalender;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -17,11 +17,11 @@ import java.util.Calendar;
         iconName = "")
 @SimpleObject(external = true)
 
-public class BaruLagi extends AndroidNonvisibleComponent {
+public class Kalender extends AndroidNonvisibleComponent {
     private Context context;
     private CalendarView calendarView;
 
-    public BaruLagi(ComponentContainer container) {
+    public Kalender(ComponentContainer container) {
         super(container.$form());
         this.context = container.$context();
         this.calendarView = new CalendarView(context);
