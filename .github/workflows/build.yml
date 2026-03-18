@@ -23,8 +23,15 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          # Perkenalan diri ke Git
           git config --global user.email "mahrusali@example.com"
           git config --global user.name "Mahrus Ali"
+          
+          # MATIKAN FITUR SIGNING (Solusi Error GPG)
+          git config --global commit.gpgsign false
+          git config --global tag.gpgsign false
+          
+          # Jalankan update
           chmod +x update-deps.sh
           ./update-deps.sh
 
