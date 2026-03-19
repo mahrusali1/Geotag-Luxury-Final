@@ -30,7 +30,9 @@ public class GeotagLuxury extends AndroidNonvisibleComponent {
             int width = originalBitmap.getWidth();
             int height = originalBitmap.getHeight();
             int tableHeight = height / 4;
-            Canvas canvas = new Canvas(originalBitmap);
+            
+            // PERBAIKAN: Menggunakan nama lengkap android.graphics.Canvas agar tidak bentrok
+            android.graphics.Canvas canvas = new android.graphics.Canvas(originalBitmap);
 
             // 1. Background Hitam Transparan
             Paint bgPaint = new Paint();
@@ -59,14 +61,16 @@ public class GeotagLuxury extends AndroidNonvisibleComponent {
             bPaint.setColor(Color.WHITE);
             canvas.drawRect(benderaX, startY - (bSize/2), benderaX + (bSize * 1.5f), startY, bPaint);
 
-            // 3. Logo GPS Map Camera (Pojok Kanan Atas Tabel)
+            // 3. Logo GPS Map Camera
             try {
                 InputStream is = container.$form().openAsset("gps_logo.png");
                 Bitmap logo = BitmapFactory.decodeStream(is);
                 int lSize = tableHeight / 4;
                 Bitmap sLogo = Bitmap.createScaledBitmap(logo, lSize, lSize, true);
                 canvas.drawBitmap(sLogo, width - lSize - marginKiri, height - tableHeight + 20, null);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                // Abaikan jika logo tidak ada
+            }
 
             // 4. Detail Koordinat & Waktu
             textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
@@ -75,12 +79,18 @@ public class GeotagLuxury extends AndroidNonvisibleComponent {
             canvas.drawText("Lat " + latitude + " Long " + longitude, marginKiri, yDetail, textPaint);
             canvas.drawText(date + " GMT +07:00", marginKiri, yDetail + (int)(textSizeDetail * 1.6f), textPaint);
 
-            // 5. Simpan File
+            // 5. Simpan File Baru
             String outPath = imagePath.replace(".jpg", "_geotag.jpg");
+            if (outPath.equals(imagePath)) outPath = imagePath + "_new.jpg"; // Jaga-jaga jika format bukan jpg
+            
             FileOutputStream out = new FileOutputStream(new File(outPath));
             originalBitmap.compress(Bitmap.CompressFormat.JPEG, 95, out);
+            out.flush();
             out.close();
+
             return outPath;
-        } catch (Exception e) { return "Error: " + e.getMessage(); }
+        } catch (Exception e) { 
+            return "Error: " + e.getMessage(); 
+        }
     }
 }
