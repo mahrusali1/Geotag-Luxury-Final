@@ -31,8 +31,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: GeotagLuxury-Extension
-          path: |
-            out/*.aix
-            build/externalComponents/**/*.aix
-            **/*.aix
+          # Gunakan satu baris sapu jagat ini saja
+          path: "**/*.aix"
           if-no-files-found: error
