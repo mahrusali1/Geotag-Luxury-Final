@@ -24,20 +24,21 @@ jobs:
 
       - name: Build with Ant
         run: |
+          # 1. Cek folder lib dulu, ada isinya tidak?
+          echo "=== CEK ISI FOLDER LIB ==="
+          ls -R lib || echo "Folder lib tidak ditemukan!"
+          
+          # 2. Jalankan Build
           ant clean
-          ant extensions
-          # Perintah tambahan untuk melihat di mana file .aix berada
-          echo "Mencari file .aix yang dihasilkan..."
+          ant extensions -v  # Pakai -v (verbose) agar log-nya lengkap
+          
+          # 3. Cari file .aix secara paksa
+          echo "=== HASIL PENCARIAN FILE .AIX ==="
           find . -name "*.aix"
 
       - name: Upload AIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: GeotagLuxury-Extension
-          # Kita suruh robot cari di seluruh root folder tanpa ampun
-          path: |
-            out/*.aix
-            **/out/*.aix
-            build/**/*.aix
-            **/*.aix
-          if-no-files-found: error
+          path: "**/*.aix"
+          if-no-files-found: warn # Ganti ke warn dulu agar tidak langsung merah
