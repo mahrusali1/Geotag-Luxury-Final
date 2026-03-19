@@ -7,41 +7,19 @@
   <property name="ExternalComponent.dir" location="build/externalComponents" />
   <property name="ExternalComponent-class.dir" location="build/externalComponents-classes" />
 
-  <target name="all" depends="extensions">
-    <echo message="Proses Selesai! Cek folder out untuk file .aix" />
-  </target>
+  <target name="all" depends="extensions" />
 
   <target name="clean">
     <delete dir="build" />
     <delete dir="out" />
   </target>
 
-  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-    <classpath>
-      <fileset dir="lib">
-        <include name="**/ant-contrib*.jar"/>
-      </fileset>
-    </classpath>
-  </taskdef>
-
-  <target name="javac.helpers">
+  <target name="javac">
     <mkdir dir="${AndroidRuntime-classes.dir}" />
     <javac target="1.8" source="1.8" destdir="${AndroidRuntime-classes.dir}" srcdir="src" encoding="utf-8" includeantruntime="false">
       <classpath>
         <fileset dir="lib"><include name="**/*.jar" /></fileset>
       </classpath>
-      <include name="**/helpers/*.java" />
-    </javac>
-  </target>
-
-  <target name="javac" depends="javac.helpers">
-    <mkdir dir="${AndroidRuntime-classes.dir}" />
-    <javac target="1.8" source="1.8" destdir="${AndroidRuntime-classes.dir}" srcdir="src" encoding="utf-8" includeantruntime="false">
-      <classpath>
-        <fileset dir="lib"><include name="**/*.jar" /></fileset>
-      </classpath>
-      <include name="**/*.java" />
-      <exclude name="**/helpers/*.java" />
     </javac>
   </target>
 
@@ -63,59 +41,23 @@
     </java>
   </target>
 
-  <target name="unjarAllExtensionLibraries">
-    <foreach target="unjarExtensionLibraries" param="extension" inheritall="true">
-      <path><dirset dir="build/externalComponents-classes"><include name="*" /></dirset></path>
-    </foreach>
+  <target name="jarExtension" depends="process">
+    <jar destfile="${ExternalComponent-class.dir}/${extension.name}.jar" basedir="${ExternalComponent-class.dir}/${extension.name}" includes="**/*.class" />
+    <copy file="${ExternalComponent-class.dir}/${extension.name}.jar" tofile="${ExternalComponent.dir}/${extension.name}/files/AndroidRuntime.jar"/>
   </target>
 
-  <target name="unjarExtensionLibraries">
-    <basename property="extensionClassFolder" file="${extension}" />
-    <unzip dest="build/externalComponents-classes/${extensionClassFolder}">
-      <fileset dir="build/externalComponents-classes/${extensionClassFolder}"><include name="**/*.jar" /></fileset>
-    </unzip>
-  </target>
-
-  <target name="jarAllExtensions" depends="process,unjarAllExtensionLibraries" >
-    <foreach target="jarExtension" param="extension" inheritall="true">
-      <path><dirset dir="${ExternalComponent-class.dir}"><include name="*" /></dirset></path>
-    </foreach>
-  </target>
-
-  <target name="jarExtension">
-    <basename property="extensionClassFolder" file="${extension}" />
-    <jar destfile="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" basedir="${ExternalComponent-class.dir}/${extensionClassFolder}" includes="**/*.class" excludes="*.jar" />
-    <copy file="${ExternalComponent-class.dir}/${extensionClassFolder}.jar" tofile="${ExternalComponent.dir}/${extensionClassFolder}/files/AndroidRuntime.jar"/>
-    <echo>Membungkus JAR untuk: ${extensionClassFolder}</echo>
-  </target>
-
-  <target name="dexAllExtensions" depends="jarAllExtensions">
-    <foreach target="dexExtension" param="extension">
-      <path><fileset dir="${ExternalComponent-class.dir}"><include name="*.jar"/></fileset></path>
-    </foreach>
-  </target>
-
-  <target name="dexExtension">
-    <basename property="extensionType" file="${extension}" suffix=".jar"/>
+  <target name="dexExtension" depends="jarExtension">
     <java jar="lib/appinventor/dx.jar" fork="true" failonerror="true">
       <arg value="--dex"/><arg value="--no-strict"/><arg value="--output"/>
-      <arg value="${ExternalComponent.dir}/${extensionType}/classes.jar"/>
-      <arg value="${ExternalComponent-class.dir}/${extensionType}.jar"/>
+      <arg value="${ExternalComponent.dir}/${extension.name}/classes.jar"/>
+      <arg value="${ExternalComponent-class.dir}/${extension.name}.jar"/>
     </java>
-    <echo>Dexing: ${extensionType}</echo>
   </target>
 
-  <target name="packExtension">
-    <basename property="extensionType" file="${extension}" />
-    <echo>Sedang membuat file AIX untuk: ${extensionType}</echo>
-    <zip destfile="${Extensions.dir}/${extensionType}.aix" basedir="${ExternalComponent.dir}" includes="${extensionType}/" />
-  </target>
-
-  <target name="extensions" depends="jarAllExtensions, dexAllExtensions">
+  <target name="extensions" depends="dexExtension">
     <mkdir dir="${Extensions.dir}" />
-    <foreach target="packExtension" param="extension" inheritall="true">
-      <path><dirset dir="${ExternalComponent.dir}"><include name="*" /></dirset></path>
-    </foreach>
+    <zip destfile="${Extensions.dir}/${extension.name}.aix" basedir="${ExternalComponent.dir}" includes="${extension.name}/" />
+    <echo message="BERHASIL: File .aix seharusnya sudah ada di folder out!" />
   </target>
 
 </project>
