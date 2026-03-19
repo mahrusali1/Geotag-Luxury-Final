@@ -1,7 +1,11 @@
 package com.betaproduct.GeotagLuxury;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
@@ -33,7 +37,6 @@ public class GeotagLuxury extends AndroidNonvisibleComponent {
 
     @SimpleFunction(description = "Proses foto dengan watermark luxury. Alamat dicari otomatis dari Lat/Long.")
     public String ProcessImagePresisi(String imagePath, double latitude, double longitude, String date) {
-        // Ambil alamat otomatis secara aman
         String address = "";
         try {
             Geocoder geocoder = new Geocoder(this.context, Locale.getDefault());
@@ -53,19 +56,17 @@ public class GeotagLuxury extends AndroidNonvisibleComponent {
             if (config == null) config = Bitmap.Config.ARGB_8888;
             Bitmap processedBitmap = originalBitmap.copy(config, true);
             
-            android.graphics.Canvas canvas = new android.graphics.Canvas(processedBitmap);
+            Canvas canvas = new Canvas(processedBitmap);
             int width = processedBitmap.getWidth();
             int height = processedBitmap.getHeight();
 
-            // Gambar Bar Hitam Transparan (Luxury Style)
             int barHeight = height / 6;
             Paint barPaint = new Paint();
-            barPaint.setColor(Color.parseColor("#BB000000")); // Hitam agak pekat
+            barPaint.setColor(Color.parseColor("#BB000000"));
             canvas.drawRect(0, height - barHeight, width, height, barPaint);
 
             int padding = width / 40;
             
-            // Teks Alamat (Putih & Bold)
             Paint textPaint = new Paint();
             textPaint.setColor(Color.WHITE);
             textPaint.setAntiAlias(true);
@@ -76,13 +77,11 @@ public class GeotagLuxury extends AndroidNonvisibleComponent {
             float addressY = height - barHeight + (barHeight * 0.35f);
             canvas.drawText(address, textX, addressY, textPaint);
 
-            // Teks Tanggal & Jam (Lebih Kecil)
             textPaint.setFakeBoldText(false);
             textPaint.setTextSize(barHeight * 0.15f);
             float dateY = addressY + (barHeight * 0.25f);
             canvas.drawText(date, textX, dateY, textPaint);
 
-            // Gambar Bendera Merah Putih (Pojok Kanan Bawah)
             int flagW = barHeight / 3;
             int flagH = flagW * 2 / 3;
             int flagX = width - padding - flagW;
@@ -94,7 +93,6 @@ public class GeotagLuxury extends AndroidNonvisibleComponent {
             flagPaint.setColor(Color.WHITE);
             canvas.drawRect(flagX, flagY + (flagH / 2), flagX + flagW, flagY + flagH, flagPaint);
 
-            // Simpan ke Cache
             File outputFile = File.createTempFile("Geotag_", ".jpg", context.getCacheDir());
             FileOutputStream fos = new FileOutputStream(outputFile);
             processedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
