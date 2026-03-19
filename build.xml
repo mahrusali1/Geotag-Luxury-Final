@@ -63,10 +63,14 @@
     </java>
   </target>
 
-  <target name="extensions" depends="dexExtension">
+ <target name="extensions" depends="dexExtension">
     <mkdir dir="${Extensions.dir}" />
-    <zip destfile="${Extensions.dir}/${extension.name}.aix" basedir="${ExternalComponent.dir}" includes="${extension.name}/" />
-    <echo message="BERHASIL: File .aix seharusnya sudah ada di folder out!" />
+    <zip destfile="${Extensions.dir}/${extension.name}.aix">
+      <fileset dir="${ExternalComponent.dir}">
+        <include name="${extension.name}/**" />
+      </fileset>
+    </zip>
+    <echo message="AIX Berhasil Dibuat: ${extension.name}.aix" />
   </target>
 
 </project>
