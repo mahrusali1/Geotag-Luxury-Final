@@ -42,8 +42,17 @@
   </target>
 
   <target name="jarExtension" depends="process">
-    <jar destfile="${ExternalComponent-class.dir}/${extension.name}.jar" basedir="${ExternalComponent-class.dir}/${extension.name}" includes="**/*.class" />
-    <copy file="${ExternalComponent-class.dir}/${extension.name}.jar" tofile="${ExternalComponent.dir}/${extension.name}/files/AndroidRuntime.jar"/>
+    <jar destfile="${ExternalComponent-class.dir}/${extension.name}.jar">
+        <fileset dir="${ExternalComponent-class.dir}">
+            <include name="**/*.class" />
+        </fileset>
+    </jar>
+    <copy todir="${ExternalComponent.dir}">
+        <fileset dir="${ExternalComponent-class.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+        <mapper type="regexp" from="^(.*)\.jar$$" to="\1/files/AndroidRuntime.jar" />
+    </copy>
   </target>
 
   <target name="dexExtension" depends="jarExtension">
