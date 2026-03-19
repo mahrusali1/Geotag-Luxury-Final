@@ -22,7 +22,7 @@ public class Kalender extends AndroidNonvisibleComponent {
         this.context = container.$context();
     }
 
-    @SimpleFunction(description = "Munculkan Kalender Material (Seperti Gambar)")
+    @SimpleFunction(description = "Munculkan Kalender Material Seperti Gambar")
     public void TampilkanPopUp() {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
